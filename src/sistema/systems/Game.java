@@ -1,5 +1,6 @@
 package sistema.systems;
 
+import sistema.characters.Actor;
 import sistema.characters.EnemyCharacter;
 import sistema.characters.PlayerCharacter;
 import sistema.systems.graphics.*;
@@ -10,6 +11,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Game extends Canvas {
 
@@ -17,9 +19,9 @@ public class Game extends Canvas {
 
     private boolean gameRunning = true;
 
-    private ArrayList<Entity> entities = new ArrayList<>();
+    private ArrayList<Actor> actors = new ArrayList<>();
 
-    private ArrayList<Entity> removeList = new ArrayList<>();
+    private ArrayList<Actor> removeList = new ArrayList<>();
 
     private ArrayList<BackgroundEntity> backgroundEntities = new ArrayList<>();
 
@@ -27,7 +29,11 @@ public class Game extends Canvas {
 
     private ArrayList<PlayerCharacter> playerParty;
 
+    private ArrayList<PlayerCharacter> playerPartyRemoveList = new ArrayList<>();;
+
     private ArrayList<EnemyCharacter> enemyParty;
+
+    private ArrayList<EnemyCharacter> enemyPartyRemoveList = new ArrayList<>();;
 
     private Entity background;
 
@@ -41,7 +47,9 @@ public class Game extends Canvas {
 
     private int maxEnemySlots = 5;
 
-    private int totalInitiativeNeededForTurn = 4000;
+    private int totalInitiativeNeededForTurn = 10;
+
+    private Random random = new Random();
 
     public Game(ArrayList<PlayerCharacter> playerParty, ArrayList<EnemyCharacter> enemyParty) {
         this.playerParty = playerParty;
@@ -96,41 +104,75 @@ public class Game extends Canvas {
             }
 
             // Draw the sprites
-            for (Entity entity: entities) {
-                entity.draw(g);
+            for (Actor actor: actors) {
+                actor.draw(g);
             }
 
             // END of GRAPHICS logic
-            entities.removeAll(removeList);
+            actors.removeAll(removeList);
             removeList.clear();
+
+            enemyParty.removeAll(enemyPartyRemoveList);
+            enemyPartyRemoveList.clear();
+
+            playerParty.removeAll(playerPartyRemoveList);
+            playerPartyRemoveList.clear();
 
             g.dispose();
             strategy.show();
 
+
+            System.out.println(enemyParty);
             // START of GAME logic
-            for (PlayerCharacter playerCharacter: playerParty) {
-                int playerSpeed = playerCharacter.getSpeed();
-                int playerInitiative = playerCharacter.getInitiative();
+            for (Actor actor: actors) {
+                int playerSpeed = actor.getSpeed();
+                int playerInitiative = actor.getInitiative();
 
-                playerCharacter.setInitiative(playerInitiative + playerSpeed);
+                actor.setInitiative(playerInitiative + playerSpeed);
 
                 if (playerInitiative > totalInitiativeNeededForTurn) {
-                    System.out.println(playerCharacter + " TURN TO PLAY");
-                    playerCharacter.setInitiative(0);
+
+                    if (actor instanceof EnemyCharacter) {
+
+                        PlayerCharacter playerToBeAttacked = playerParty.get(random.nextInt(playerParty.size()));
+
+                        actor.attackOtherActor(playerToBeAttacked);
+                    } else if (actor instanceof PlayerCharacter) {
+                        System.out.println(enemyParty);
+                        EnemyCharacter enemyToBeAttacked = enemyParty.get(random.nextInt(enemyParty.size()));
+
+                        actor.attackOtherActor(enemyToBeAttacked);
+
+                    }
+
+                    actor.setInitiative(0);
+                }
+
+
+            }
+
+            for (Actor actor: actors) {
+                if (actor.getHpCurrent() <= 0) {
+                    removeList.add(actor);
+                    System.out.println(actor + " has died.");
                 }
             }
 
-            for (EnemyCharacter enemyCharacter: enemyParty) {
-                int playerSpeed = enemyCharacter.getSpeed();
-                int playerInitiative = enemyCharacter.getInitiative();
-
-                enemyCharacter.setInitiative(playerInitiative + playerSpeed);
-
-                if (playerInitiative > totalInitiativeNeededForTurn) {
-                    System.out.println(enemyCharacter + " TURN TO PLAY");
-                    enemyCharacter.setInitiative(0);
+            for (PlayerCharacter player: playerParty) {
+                if (player.getHpCurrent() <= 0) {
+                    playerPartyRemoveList.add(player);
                 }
             }
+
+            for (EnemyCharacter enemy: enemyParty) {
+                if (enemy.getHpCurrent() <= 0) {
+                    enemyPartyRemoveList.add(enemy);
+                }
+            }
+
+//            if (enemyParty.isEmpty() || playerParty.isEmpty()) {
+//                System.exit(0);
+//            }
 
             try { Thread.sleep(10); } catch (Exception e) {}
         }
@@ -182,32 +224,28 @@ public class Game extends Canvas {
 
         // Populating the player slots with current party members
         for (int i = 0; i < playerParty.size(); i++ ) {
-            CharacterEntity playerCharacter = new CharacterEntity(
-                    this,
-                    playerParty.get(i).getMainBattleSprite(),
-                    playerSlots.get(i).getX(),
-                    playerSlots.get(i).getY(),
-                    playerParty.get(i)
-            );
+            int playerSpriteX = playerSlots.get(i).getX();
+            int playerSpriteY = playerSlots.get(i).getY();
 
-            entities.add(playerCharacter);
+            playerParty.get(i).setX(playerSpriteX);
+            playerParty.get(i).setY(playerSpriteY);
+
+            actors.add(playerParty.get(i));
         }
 
         // Populating the enemy slots with current party members
         for (int i = 0; i < enemyParty.size(); i++ ) {
-            CharacterEntity enemyCharacter = new CharacterEntity(
-                    this,
-                    enemyParty.get(i).getMainBattleSprite(),
-                    enemySlots.get(i).getX(),
-                    enemySlots.get(i).getY(),
-                    enemyParty.get(i)
-            );
+            int playerSpriteX = enemySlots.get(i).getX();
+            int playerSpriteY = enemySlots.get(i).getY();
 
-            entities.add(enemyCharacter);
+            enemyParty.get(i).setX(playerSpriteX);
+            enemyParty.get(i).setY(playerSpriteY);
+
+            actors.add(enemyParty.get(i));
         }
     }
 
-    public void removeEntity(Entity entity) {
-        removeList.add(entity);
+    public void removeEntity(Actor actor) {
+        removeList.add(actor);
     }
 }

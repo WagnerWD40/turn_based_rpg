@@ -1,5 +1,9 @@
 package sistema.characters;
 
+import sistema.systems.graphics.Sprite;
+import sistema.systems.graphics.SpriteStore;
+
+import java.awt.*;
 import java.util.Objects;
 
 public abstract class Actor {
@@ -11,14 +15,17 @@ public abstract class Actor {
     private int attack;
     private int speed;
     private int initiative;
-    private String mainBattleSprite;
+    private Sprite sprite;
+
+    private double x;
+    private double y;
 
     public Actor(String name, int hpMax, int hpCurrent, int speed, String mainBattleSprite) {
         this.name = name;
         this.hpMax = hpMax;
         this.hpCurrent = hpCurrent;
         this.speed = speed;
-        this.mainBattleSprite = mainBattleSprite;
+        this.sprite = SpriteStore.get().getSprite(mainBattleSprite);
     }
 
     public int getId() {
@@ -77,17 +84,20 @@ public abstract class Actor {
         this.initiative = initiative;
     }
 
-    public String getMainBattleSprite() {
-        return mainBattleSprite;
+    public double getX() {
+        return x;
     }
 
-    public void setMainBattleSprite(String mainBattleSprite) {
-        this.mainBattleSprite = mainBattleSprite;
+    public void setX(double x) {
+        this.x = x;
     }
 
-    @Override
-    public String toString() {
-        return this.name;
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
     }
 
     @Override
@@ -95,15 +105,36 @@ public abstract class Actor {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Actor actor = (Actor) o;
-        return id == actor.id;
+        return id == actor.id &&
+                hpMax == actor.hpMax &&
+                hpCurrent == actor.hpCurrent &&
+                attack == actor.attack &&
+                speed == actor.speed &&
+                initiative == actor.initiative &&
+                Double.compare(actor.x, x) == 0 &&
+                Double.compare(actor.y, y) == 0 &&
+                Objects.equals(name, actor.name) &&
+                Objects.equals(sprite, actor.sprite);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, name, hpMax, hpCurrent, attack, speed, initiative, sprite, x, y);
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
     }
 
     public void attackOtherActor(Actor actor) {
-        actor.setHpCurrent(actor.getHpCurrent() - this.attack);
+
+        actor.setHpCurrent(actor.getHpCurrent() - attack);
+        System.out.println(this + " gave " + actor + " " + attack + " points of damage.");
+        System.out.println(actor + " have " + actor.getHpCurrent() + " HP left.");
+    }
+
+    public void draw(Graphics g) {
+        sprite.draw(g, (int) x, (int) y);
     }
 }
