@@ -6,6 +6,8 @@ import java.awt.*;
 
 public abstract class Entity {
 
+    /** Entity is an object that can be drawn in the screen and have a sprite */
+
     protected double x;
 
     protected double y;

@@ -39,6 +39,8 @@ public class Battle extends Canvas {
 
     private Entity battleMenu;
 
+    private Text text;
+
     private ArrayList<BattleSlot> playerSlots = new ArrayList<>();
 
     private int maxPlayerSlots = 4;
@@ -111,6 +113,8 @@ public class Battle extends Canvas {
                 actor.draw(g);
             }
 
+            text.draw(g);
+
             // END of GRAPHICS logic
             actors.removeAll(removeList);
             removeList.clear();
@@ -125,7 +129,7 @@ public class Battle extends Canvas {
             strategy.show();
 
 
-            // System.out.println(enemyParty);
+             System.out.println(enemyParty);
             // START of GAME logic
             turnLogic();
 
@@ -255,6 +259,8 @@ public class Battle extends Canvas {
 
             actors.add(enemyParty.get(i));
         }
+
+        text = new Text("lolada ou porrada?", 40, 50);
     }
 
     public void removeEntity(Actor actor) {
