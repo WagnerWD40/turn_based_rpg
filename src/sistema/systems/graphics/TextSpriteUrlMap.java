@@ -8,8 +8,8 @@ public class TextSpriteUrlMap {
     private static TextSpriteUrlMap single = new TextSpriteUrlMap();
 
     private String[] fileNames = {
-            "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
-            "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i",
+            "uA", "uB", "uC", "uD", "uE", "uF", "uG", "uH", "uI", "uJ", "uK", "uL", "uM", "uN", "uO", "uP", "uQ",
+            "uR", "uS", "uT", "uU", "uV", "uW", "uX", "uY", "uZ", "a", "b", "c", "d", "e", "f", "g", "h", "i",
             "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "0", "1", "2",
             "3", "4", "5", "6", "7", "8", "9", "exclamation", "interrogation", "backslash", "colon", "doubleQuotes",
             "hash", "plus", "parenStart", "parenEnd", "percent", "til", "undentified", "blank"

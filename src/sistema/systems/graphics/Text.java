@@ -25,7 +25,7 @@ public class Text {
     public void draw (Graphics g) {
 
         for (int i = 0; i < textSprites.size(); i++) {
-            textSprites.get(i).getSprite().draw(g, (int) x + (i * 23), (int) y);
+            textSprites.get(i).getSprite().draw(g, (int) x + (i * 25), (int) y);
         }
     }
 

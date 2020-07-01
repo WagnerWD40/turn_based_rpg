@@ -7,6 +7,8 @@ import sistema.systems.graphics.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
@@ -20,35 +22,30 @@ public class Battle extends Canvas {
     private boolean gameRunning = true;
 
     private ArrayList<Actor> actors = new ArrayList<>();
-
     private ArrayList<Actor> removeList = new ArrayList<>();
-
     private ArrayList<BackgroundEntity> backgroundEntities = new ArrayList<>();
-
     private ArrayList<BackgroundEntity> backgroundRemoveList = new ArrayList<>();
 
     private ArrayList<PlayerCharacter> playerParty;
-
     private ArrayList<PlayerCharacter> playerPartyRemoveList = new ArrayList<>();;
-
     private ArrayList<EnemyCharacter> enemyParty;
-
     private ArrayList<EnemyCharacter> enemyPartyRemoveList = new ArrayList<>();;
 
     private Entity background;
+    private Entity battleMenuBackground;
 
-    private Entity battleMenu;
-
+    // GUI
+    private BattleMenu battleMenu;
     private Text text;
+    private KeyInputHandler playerController = new KeyInputHandler();
 
+    // positional variables
     private ArrayList<BattleSlot> playerSlots = new ArrayList<>();
-
     private int maxPlayerSlots = 4;
-
     private ArrayList<BattleSlot> enemySlots = new ArrayList<>();
-
     private int maxEnemySlots = 5;
 
+    // Time to take a turn
     private int totalInitiativeNeededForTurn = 4000;
 
     private Random random = new Random();
@@ -82,8 +79,11 @@ public class Battle extends Canvas {
             }
         });
 
-        // ass key input
-        addKeyListener(new KeyInputHandler());
+        // key input
+        addKeyListener(playerController);
+
+        // request the focus so key events come to us
+        requestFocus();
 
         // create the buffering strategy which will allow AWT to manage our accelerated graphics
         createBufferStrategy(2);
@@ -113,8 +113,7 @@ public class Battle extends Canvas {
                 actor.draw(g);
             }
 
-            text.draw(g);
-
+            battleMenu.draw(g);
             // END of GRAPHICS logic
             actors.removeAll(removeList);
             removeList.clear();
@@ -129,7 +128,7 @@ public class Battle extends Canvas {
             strategy.show();
 
 
-             System.out.println(enemyParty);
+            //System.out.println(enemyParty);
             // START of GAME logic
             turnLogic();
 
@@ -204,7 +203,7 @@ public class Battle extends Canvas {
                 0
         );
 
-        battleMenu = new BackgroundEntity(
+        battleMenuBackground = new BackgroundEntity(
                 this,
                 "sprites/battle_menu.png",
                 0,
@@ -212,7 +211,7 @@ public class Battle extends Canvas {
         );
 
         backgroundEntities.add((BackgroundEntity) background);
-        backgroundEntities.add((BackgroundEntity) battleMenu);
+        backgroundEntities.add((BackgroundEntity) battleMenuBackground);
 
         // Creating players slots in battle
         for (int i = 0; i < maxPlayerSlots; i++) {
@@ -260,7 +259,7 @@ public class Battle extends Canvas {
             actors.add(enemyParty.get(i));
         }
 
-        text = new Text("lolada ou porrada?", 40, 50);
+        battleMenu = new BattleMenu(playerParty, enemyParty);
     }
 
     public void removeEntity(Actor actor) {
@@ -282,5 +281,96 @@ public class Battle extends Canvas {
         } else {
             return choosenCharacter;
         }
+    }
+
+    public class KeyInputHandler extends KeyAdapter {
+
+//        private boolean leftPressed = false;
+//        private boolean rightPressed = false;
+//        private boolean upPressed = false;
+//        private boolean downPressed = false;
+//        private boolean confirmPressed = false;
+//        private boolean cancelPressed = false;
+//
+//        public boolean isLeftPressed() {
+//            return leftPressed;
+//        }
+//
+//        public boolean isRightPressed() {
+//            return rightPressed;
+//        }
+//
+//        public boolean isUpPressed() {
+//            return upPressed;
+//        }
+//
+//        public boolean isDownPressed() {
+//            return downPressed;
+//        }
+//
+//        public boolean isConfirmPressed() {
+//            return confirmPressed;
+//        }
+//
+//        public boolean isCancelPressed() {
+//            return cancelPressed;
+//        }
+
+        public void keyPressed(KeyEvent e) {
+
+            if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+//                leftPressed = true;
+            }
+
+            if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+//                rightPressed = true;
+            }
+
+            if (e.getKeyCode() == KeyEvent.VK_UP) {
+                battleMenu.setSelectedCommand(battleMenu.getSelectedCommand() - 1);
+//                upPressed = true;
+            }
+
+            if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                battleMenu.setSelectedCommand(battleMenu.getSelectedCommand() + 1);
+//                downPressed = true;
+            }
+
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+//                confirmPressed = true;
+            }
+
+            if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+//                cancelPressed = true;
+            }
+        }
+
+//        public void keyReleased(KeyEvent e) {
+//
+//            if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+//                leftPressed = false;
+//            }
+//
+//            if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+//                rightPressed = false;
+//            }
+//
+//            if (e.getKeyCode() == KeyEvent.VK_UP) {
+//                upPressed = false;
+//            }
+//
+//            if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+//                downPressed = false;
+//            }
+//
+//            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+//                confirmPressed = false;
+//            }
+//
+//            if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+//                cancelPressed = false;
+//            }
+//        }
+//
     }
 }
