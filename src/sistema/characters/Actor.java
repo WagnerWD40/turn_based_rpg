@@ -53,7 +53,11 @@ public abstract class Actor {
     }
 
     public int getHpCurrent() {
-        return hpCurrent;
+        if (hpCurrent > 0) {
+            return hpCurrent;
+        }
+        return 0;
+
     }
 
     public void setHpCurrent(int hpCurrent) {
@@ -98,6 +102,10 @@ public abstract class Actor {
 
     public void setY(double y) {
         this.y = y;
+    }
+
+    public int getSpriteHeight() {
+        return sprite.getHeight();
     }
 
     @Override

@@ -7,18 +7,13 @@ import sistema.systems.graphics.Entity;
 import sistema.systems.graphics.Text;
 
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import static com.sun.java.accessibility.util.AWTEventMonitor.addKeyListener;
 
 public class BattleMenu {
 
     private ArrayList<PlayerCharacter> playerCharacters;
     private ArrayList<EnemyCharacter> enemyCharacters;
-    private boolean acceptPlayerCommands = false;
     private ArrayList<String> menuOptions= new ArrayList<>(Arrays.asList(
             "Attack", "Magic", "Item", "Defend"
     ));
@@ -27,23 +22,27 @@ public class BattleMenu {
     private int selectedEnemy = 0;
     private KeyInputHandler playerController = new KeyInputHandler();
 
+    // Text dimensions
     final private int firstLineYPos = 520;
     final private int nameStartingXPos = 350;
     final private int hpStartingXPos = 600;
     final private int menuStartingXPos = 80;
     final private int lineHeight = 40;
 
+    // Cursor Controls
+    final private int cursorStartingXPos = menuStartingXPos - 60;
     final private Entity cursor = new Cursor(
             "sprites/cursor.png",
-            menuStartingXPos - 60, //(cursor size) 51 + (margin) 9
+            cursorStartingXPos, //(cursor size) 51 + (margin) 9
             firstLineYPos// center in the line
     );
+    private boolean commandWasSelected = false;
+    private boolean enemyWasSelected = false;
+    private boolean acceptPlayerCommands = false;
 
     public BattleMenu(ArrayList<PlayerCharacter> playerCharacters, ArrayList<EnemyCharacter> enemyCharacters) {
         this.playerCharacters = playerCharacters;
         this.enemyCharacters = enemyCharacters;
-
-
     }
 
     public int getSelectedCommand() {
@@ -65,11 +64,37 @@ public class BattleMenu {
     }
 
     public void setSelectedEnemy(int selectedEnemy) {
-        this.selectedEnemy = enemyCharacters.size() > 1 ? selectedEnemy : 0;
+        if (selectedEnemy > enemyCharacters.size() - 1) {
+            this.selectedEnemy = 0;
+        } else if (selectedEnemy < 0) {
+            this.selectedEnemy = menuOptions.size() - 1;
+        } else {
+            this.selectedEnemy = selectedCommand;
+        }
     }
 
-    public boolean getAcceptPlayerCommands() {
+    public boolean isAcceptPlayerCommands() {
         return acceptPlayerCommands;
+    }
+
+    public void setAcceptPlayerCommands(boolean acceptPlayerCommands) {
+        this.acceptPlayerCommands = acceptPlayerCommands;
+    }
+
+    public boolean isCommandWasSelected() {
+        return commandWasSelected;
+    }
+
+    public void setCommandWasSelected(boolean commandWasSelected) {
+        this.commandWasSelected = commandWasSelected;
+    }
+
+    public boolean isEnemyWasSelected() {
+        return enemyWasSelected;
+    }
+
+    public void setEnemyWasSelected(boolean enemyWasSelected) {
+        this.enemyWasSelected = enemyWasSelected;
     }
 
     public void turnOnPlayerCommand() {
@@ -98,7 +123,20 @@ public class BattleMenu {
             commandName.draw(g);
         }
 
-        cursor.setY(firstLineYPos + selectedCommand * lineHeight);
+        if (!commandWasSelected && acceptPlayerCommands) {
+            cursor.setX(cursorStartingXPos);
+            cursor.setY(firstLineYPos + selectedCommand * lineHeight);
+        }
+
+        if (commandWasSelected && !enemyWasSelected && acceptPlayerCommands) {
+            EnemyCharacter enemy = enemyCharacters.get(selectedEnemy);
+
+            cursor.setX(enemy.getX() - 50);
+            cursor.setY(enemy.getY() + enemy.getSpriteHeight() / 2);
+        }
+    }
+
+    public void drawCursor(Graphics g) {
         cursor.draw(g);
     }
 }
